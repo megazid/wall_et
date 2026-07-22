@@ -18,7 +18,7 @@ class HomeScreen extends StatelessWidget {
             "title": "Rent",
             "icon": Icons.home,
             "color": Colors.black,
-            "amount": "- 65"
+            "amount": "- 1000"
           },
           {
             "title": "Rent",
