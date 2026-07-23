@@ -1,17 +1,34 @@
+import '../model/invoice.dart';
+import '../model/day_expense.dart';
+
 class HomeController {
-  static double parseAmount(String amountStr) {
-    String clean = amountStr.replaceAll('-', '').replaceAll(',', '').trim();
-    return double.tryParse(clean) ?? 0.0;
+
+  static List<DayExpense> groupByDay(List<Invoice> invoices) {
+    final Map<DateTime, List<Invoice>> buckets = {};
+
+    for (final invoice in invoices) {
+      final day =
+          DateTime(invoice.date.year, invoice.date.month, invoice.date.day);
+      buckets.putIfAbsent(day, () => []).add(invoice);
+    }
+
+    final days = buckets.entries
+        .map((entry) => DayExpense(date: entry.key, invoices: entry.value))
+        .toList();
+
+    days.sort((a, b) => b.date.compareTo(a.date));
+    return days;
   }
 
-
-  static double calculateDayTotal(List<dynamic> invoices){
-    return invoices.fold(0.0, (sum,item)=> sum + parseAmount(item["amount"]));
+  static double grandTotal(List<Invoice> invoices) {
+    return invoices.fold(0.0, (sum, invoice) => sum + invoice.amount);
   }
 
-  static double calculateGrandTotal(List<Map<String,dynamic>> daysData){
-    return daysData.fold(0.0, (grandSum,day){
-      return grandSum + calculateDayTotal(day["invoices"]);
-    });
+  static String formatDay(DateTime date) {
+    const months = [
+      'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN',
+      'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC',
+    ];
+    return "${date.day} ${months[date.month - 1]}";
   }
 }
